@@ -5,7 +5,7 @@ import (
 	"github.com/polyanimal/advertising/internal/advertising"
 )
 
-func RegisterHTTPEndpoints(router *gin.RouterGroup, advertisingUC advertising.UseCase) {
+func RegisterHTTPEndpoints(router *gin.Engine, advertisingUC advertising.UseCase) {
 	handler := NewHandler(advertisingUC)
 
 	router.GET("/advertisements", handler.GetAllAdvertisements)
