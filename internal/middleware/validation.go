@@ -9,6 +9,10 @@ type Validation interface {
 type ValidationMiddleware struct {
 }
 
+func NewValidationMiddleware() *ValidationMiddleware{
+	return &ValidationMiddleware{}
+}
+
 func (m *ValidationMiddleware) CheckValid() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
