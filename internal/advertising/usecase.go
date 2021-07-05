@@ -4,6 +4,6 @@ import "github.com/polyanimal/advertising/internal/models"
 
 type UseCase interface {
 	GetAllAdvertisements() ([]models.Advertisement, error)
-	GetAdvertisement() (models.Advertisement, error)
-	CreateAdvertisement() error
+	GetAdvertisement(ID string) (models.Advertisement, error)
+	CreateAdvertisement(models.Advertisement) (string, error)
 }
