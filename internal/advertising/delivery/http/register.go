@@ -9,7 +9,7 @@ import (
 func RegisterHTTPEndpoints(router *gin.Engine, advertisingUC advertising.UseCase, validationMiddleware middleware.Validation) {
 	handler := NewHandler(advertisingUC)
 
-	router.POST("/advertisements/", validationMiddleware.CheckValid(), handler.CreateAdvertisement)
+	router.POST("/advertisements", validationMiddleware.CheckValid(), handler.CreateAdvertisement)
 	router.GET("/advertisements", handler.GetAllAdvertisements)
 	router.GET("/advertisements/:id", handler.GetAdvertisement)
 }
