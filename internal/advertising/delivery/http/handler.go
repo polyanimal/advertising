@@ -9,12 +9,12 @@ import (
 )
 
 type Handler struct {
-	advertisingUC advertising.UseCase
+	useCase advertising.UseCase
 }
 
 func NewHandler(useCase advertising.UseCase) *Handler {
 	return &Handler{
-		advertisingUC: useCase,
+		useCase: useCase,
 	}
 }
 
@@ -24,8 +24,21 @@ type AdvertisementsResponse struct {
 	Advertisements []models.Advertisement `json:"advertisements"`
 }
 
+type AdvertisementResponse struct {
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Price       uint     `json:"price"`
+	MainPhoto   string   `json:"main_photo"`
+	Description string   `json:"description"`
+	AllPhotos   []string `json:"all_photos"`
+}
+
 type CreateAdvertisementResponse struct {
 	ID string `json:"id"`
+}
+
+type fieldsParam struct {
+	Fields []string `json:"fields"`
 }
 
 func (h *Handler) GetAllAdvertisements(ctx *gin.Context) {
@@ -33,6 +46,33 @@ func (h *Handler) GetAllAdvertisements(ctx *gin.Context) {
 }
 
 func (h *Handler) GetAdvertisement(ctx *gin.Context) {
+	ID := ctx.Param("id")
+	fields := new(fieldsParam)
+	errFields := ctx.BindJSON(fields)
+
+	ad, err := h.useCase.GetAdvertisement(ID)
+	if err != nil {
+		util.RespondWithError(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	response := AdvertisementResponse{
+		ID:        ad.ID,
+		Name:      ad.Name,
+		Price:     ad.Price,
+		MainPhoto: ad.PhotoLinks[0],
+	}
+
+	if errFields == nil {
+		for _, s := range fields.Fields {
+			switch {
+			case s == "Description":
+				response.Description = ad.Description
+			case s == "AllPhotos":
+				response.AllPhotos = ad.PhotoLinks
+			}
+		}
+	}
 
 }
 
@@ -44,7 +84,7 @@ func (h *Handler) CreateAdvertisement(ctx *gin.Context) {
 		return
 	}
 
-	id, err := h.advertisingUC.CreateAdvertisement(*ad)
+	id, err := h.useCase.CreateAdvertisement(*ad)
 	if err != nil {
 		util.RespondWithError(ctx, http.StatusInternalServerError, err.Error())
 		return
