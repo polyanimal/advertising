@@ -15,6 +15,6 @@ func NewValidationMiddleware() *ValidationMiddleware{
 
 func (m *ValidationMiddleware) CheckValid() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		ctx.Next()
 	}
 }

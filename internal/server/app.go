@@ -2,13 +2,13 @@ package server
 
 import (
 	"context"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/polyanimal/advertising/internal/advertising"
 	advertisingHttp "github.com/polyanimal/advertising/internal/advertising/delivery/http"
 	localstorage "github.com/polyanimal/advertising/internal/advertising/repository/localstorage"
 	"github.com/polyanimal/advertising/internal/advertising/usecase"
 	middleware "github.com/polyanimal/advertising/internal/middleware"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -35,10 +35,10 @@ func NewServer() *App {
 
 func (app *App) Run(port string) error {
 	router := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
-	config.AllowCredentials = true
-	router.Use(cors.New(config))
+	//config := cors.DefaultConfig()
+	//config.AllowOrigins = []string{"http://localhost" + ":" + port}
+	//config.AllowCredentials = true
+	//router.Use(cors.New(config))
 
 	router.Use(gin.Recovery())
 	advertisingHttp.RegisterHTTPEndpoints(router, app.advertisingUC, app.validationMiddleware)
@@ -50,6 +50,13 @@ func (app *App) Run(port string) error {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+
+	go func() {
+		err := app.server.ListenAndServe()
+		if err != nil {
+			log.Fatal("Failed to listen and serve: ", err)
+		}
+	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
