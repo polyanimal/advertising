@@ -74,6 +74,7 @@ func (h *Handler) GetAdvertisement(ctx *gin.Context) {
 		}
 	}
 
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (h *Handler) CreateAdvertisement(ctx *gin.Context) {
