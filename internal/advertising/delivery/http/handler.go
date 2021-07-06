@@ -66,9 +66,9 @@ func (h *Handler) GetAdvertisement(ctx *gin.Context) {
 	if errFields == nil {
 		for _, s := range fields.Fields {
 			switch {
-			case s == "Description":
+			case s == "description":
 				response.Description = ad.Description
-			case s == "AllPhotos":
+			case s == "all_photos":
 				response.AllPhotos = ad.PhotoLinks
 			}
 		}
