@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/polyanimal/advertising/internal/advertising"
 	"github.com/polyanimal/advertising/internal/models"
+	constants "github.com/polyanimal/advertising/pkg/const"
 	"github.com/polyanimal/advertising/pkg/util"
 	"net/http"
 )
@@ -92,10 +93,15 @@ func (h *Handler) GetAdvertisement(ctx *gin.Context) {
 }
 
 func (h *Handler) CreateAdvertisement(ctx *gin.Context) {
-	ad := new(models.Advertisement)
-	err := ctx.BindJSON(ad)
-	if err != nil {
-		util.RespondWithError(ctx, http.StatusInternalServerError, err.Error())
+	adInterface, exists := ctx.Get(constants.NewAdKey)
+	if !exists {
+		util.RespondWithError(ctx, http.StatusInternalServerError, "no ad in context")
+		return
+	}
+
+	ad, ok := adInterface.(*models.Advertisement)
+	if !ok {
+		util.RespondWithError(ctx, http.StatusInternalServerError, "failed to cast ad to model")
 		return
 	}
 
