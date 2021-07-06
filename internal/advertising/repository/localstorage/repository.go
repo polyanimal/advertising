@@ -21,11 +21,11 @@ func NewAdvertisingRepo() *AdvertisingRepo {
 
 func (r *AdvertisingRepo) GetAllAdvertisements(options *models.Options) ([]models.Advertisement, error) {
 	ads := make([]models.Advertisement, 0)
-	
+
 	for _, ad := range r.advertisements {
 		ads = append(ads, ad)
 	}
-	
+
 	if options.Sort == "by_date" {
 		sort.Slice(ads, func(i, j int) bool {
 			return ads[i].DateCreate.Before(ads[j].DateCreate)
@@ -39,12 +39,22 @@ func (r *AdvertisingRepo) GetAllAdvertisements(options *models.Options) ([]model
 	}
 
 	if options.Order == "descending" {
-		for i, j := 0, len(ads)-1; i < j; i, j = i+1, j-1 {  //reverse slice
+		for i, j := 0, len(ads)-1; i < j; i, j = i+1, j-1 { //reverse slice
 			ads[i], ads[j] = ads[j], ads[i]
 		}
 	}
 
-	return ads, nil
+	start := (options.PageNumber - 1) * options.ObjectsPerPage
+	if start >= len(ads) {
+		return nil, errors.New("invalid page")
+	}
+
+	end := start + options.ObjectsPerPage
+	if end > len(ads) {
+		end = len(ads)
+	}
+
+	return ads[start:end], nil
 }
 
 func (r *AdvertisingRepo) GetAdvertisement(ID string) (models.Advertisement, error) {

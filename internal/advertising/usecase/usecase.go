@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/polyanimal/advertising/internal/advertising"
 	"github.com/polyanimal/advertising/internal/models"
+	constants "github.com/polyanimal/advertising/pkg/const"
 	"github.com/satori/go.uuid"
 	"time"
 )
@@ -19,6 +20,12 @@ func NewAdvertisingUC(repository advertising.Repository) *AdvertisingUC {
 }
 
 func (uc *AdvertisingUC) GetAllAdvertisements(options *models.Options) ([]models.Advertisement, error) {
+	if options.PageNumber <= 0 {
+		return nil, errors.New("invalid page")
+	}
+
+	options.ObjectsPerPage = constants.AdsPerPage
+
 	return uc.repository.GetAllAdvertisements(options)
 }
 
