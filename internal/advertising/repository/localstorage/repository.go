@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"github.com/polyanimal/advertising/internal/models"
+	"sort"
 	"sync"
 )
 
@@ -18,8 +19,32 @@ func NewAdvertisingRepo() *AdvertisingRepo {
 	}
 }
 
-func (r *AdvertisingRepo) GetAllAdvertisements() ([]models.Advertisement, error) {
-	return nil, nil
+func (r *AdvertisingRepo) GetAllAdvertisements(options *models.Options) ([]models.Advertisement, error) {
+	ads := make([]models.Advertisement, 0)
+	
+	for _, ad := range r.advertisements {
+		ads = append(ads, ad)
+	}
+	
+	if options.Sort == "by_date" {
+		sort.Slice(ads, func(i, j int) bool {
+			return ads[i].DateCreate.Before(ads[j].DateCreate)
+		})
+	} else if options.Sort == "by_price" {
+		sort.Slice(ads, func(i, j int) bool {
+			return ads[i].Price < ads[j].Price
+		})
+	} else {
+		return nil, errors.New("invalid sort option")
+	}
+
+	if options.Order == "descending" {
+		for i, j := 0, len(ads)-1; i < j; i, j = i+1, j-1 {  //reverse slice
+			ads[i], ads[j] = ads[j], ads[i]
+		}
+	}
+
+	return ads, nil
 }
 
 func (r *AdvertisingRepo) GetAdvertisement(ID string) (models.Advertisement, error) {

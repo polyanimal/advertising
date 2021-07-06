@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"github.com/polyanimal/advertising/internal/advertising"
 	"github.com/polyanimal/advertising/internal/models"
 	"github.com/satori/go.uuid"
@@ -17,14 +18,19 @@ func NewAdvertisingUC(repository advertising.Repository) *AdvertisingUC {
 	}
 }
 
-func (uc *AdvertisingUC) GetAllAdvertisements() ([]models.Advertisement, error) {
-	return nil, nil
+func (uc *AdvertisingUC) GetAllAdvertisements(options *models.Options) ([]models.Advertisement, error) {
+	return uc.repository.GetAllAdvertisements(options)
 }
 
 func (uc *AdvertisingUC) GetAdvertisement(ID string) (models.Advertisement, error) {
 	return uc.repository.GetAdvertisement(ID)
 }
 func (uc *AdvertisingUC) CreateAdvertisement(ad models.Advertisement) (string, error) {
+
+	if ad.Name == "" || ad.Description == "" || len(ad.PhotoLinks) == 0 {  //TODO ?
+		return "", errors.New("invalid advertisement fields")
+	}
+
 	ID := uuid.NewV4().String()
 	ad.ID = ID
 	ad.DateCreate = time.Now()

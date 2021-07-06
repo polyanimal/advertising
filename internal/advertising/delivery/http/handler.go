@@ -42,7 +42,21 @@ type fieldsParam struct {
 }
 
 func (h *Handler) GetAllAdvertisements(ctx *gin.Context) {
+	options := new(models.Options)
+	err := ctx.BindJSON(options)
 
+	if err != nil {
+		util.RespondWithError(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ads, err := h.useCase.GetAllAdvertisements(options)
+	if err != nil {
+		util.RespondWithError(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, ads)
 }
 
 func (h *Handler) GetAdvertisement(ctx *gin.Context) {
