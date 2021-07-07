@@ -2,12 +2,17 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/polyanimal/advertising/internal/advertising"
 	advertisingHttp "github.com/polyanimal/advertising/internal/advertising/delivery/http"
-	localstorage "github.com/polyanimal/advertising/internal/advertising/repository/localstorage"
+	//localstorage "github.com/polyanimal/advertising/internal/advertising/repository/localstorage"
+	 database "github.com/polyanimal/advertising/internal/advertising/repository/database"
 	"github.com/polyanimal/advertising/internal/advertising/usecase"
-	middleware "github.com/polyanimal/advertising/internal/middleware"
+	"github.com/polyanimal/advertising/internal/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -21,8 +26,26 @@ type App struct {
 	validationMiddleware middleware.Validation
 }
 
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+}
+
 func NewServer() *App {
-	advertisingRepo := localstorage.NewAdvertisingRepo()
+	connStr, connected := os.LookupEnv("DB_CONNECT")
+	if !connected {
+		fmt.Println(os.Getwd())
+		log.Fatal("Failed to read DB connection data")
+	}
+
+	dbpool, err := pgxpool.Connect(context.Background(), connStr)
+	if err != nil {
+		log.Fatalf("Unable to connect to database: %v\n", err)
+	}
+
+	//advertisingRepo := localstorage.NewAdvertisingRepo()
+	advertisingRepo := database.NewAdvertisingRepo(dbpool)
 	advertisingUC := usecase.NewAdvertisingUC(advertisingRepo)
 
 	validationMiddleware := middleware.NewValidationMiddleware()
@@ -35,10 +58,10 @@ func NewServer() *App {
 
 func (app *App) Run(port string) error {
 	router := gin.Default()
-	//config := cors.DefaultConfig()
-	//config.AllowOrigins = []string{"http://localhost" + ":" + port}
-	//config.AllowCredentials = true
-	//router.Use(cors.New(config))
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost" + ":" + port}
+	config.AllowCredentials = true
+	router.Use(cors.New(config))
 
 	router.Use(gin.Recovery())
 	advertisingHttp.RegisterHTTPEndpoints(router, app.advertisingUC, app.validationMiddleware)
