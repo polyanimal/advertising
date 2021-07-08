@@ -5,8 +5,6 @@ import (
 	"github.com/polyanimal/advertising/internal/advertising"
 	"github.com/polyanimal/advertising/internal/models"
 	constants "github.com/polyanimal/advertising/pkg/const"
-	"github.com/satori/go.uuid"
-	"time"
 )
 
 type AdvertisingUC struct {
@@ -38,11 +36,6 @@ func (uc *AdvertisingUC) CreateAdvertisement(ad models.Advertisement) (string, e
 		return "", errors.New("invalid advertisement fields")
 	}
 
-	ID := uuid.NewV4().String()
-	ad.ID = ID
-	ad.DateCreate = time.Now()
-
-	err := uc.repository.CreateAdvertisement(ad)
-
+	ID, err := uc.repository.CreateAdvertisement(ad)
 	return ID, err
 }

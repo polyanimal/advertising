@@ -6,7 +6,9 @@ import (
 	"github.com/jackc/pgconn"
 	pgx "github.com/jackc/pgx/v4"
 	"github.com/polyanimal/advertising/internal/models"
+	uuid "github.com/satori/go.uuid"
 	"sort"
+	"time"
 )
 
 // PgxPoolIface Интерфейс для драйвера БД
@@ -102,17 +104,20 @@ func (r *AdvertisingRepo) GetAdvertisement(ID string) (models.Advertisement, err
 	return ad, nil
 }
 
-func (r *AdvertisingRepo) CreateAdvertisement(ad models.Advertisement) error {
+func (r *AdvertisingRepo) CreateAdvertisement(ad models.Advertisement) (string, error) {
+	ID := uuid.NewV4().String()
+	DateCreate := time.Now()
+
 	sqlStatement := `
         INSERT INTO mdb.advertisement (id, name, description, photo_links, price, date_create)
         VALUES ($1, $2, $3, $4, $5, $6)
     `
 	_, err := r.db.
-		Exec(context.Background(), sqlStatement, ad.ID, ad.Name, ad.Description, ad.PhotoLinks, ad.Price, ad.DateCreate)
+		Exec(context.Background(), sqlStatement, ID, ad.Name, ad.Description, ad.PhotoLinks, ad.Price, DateCreate)
 
 	if err != nil {
-		return errors.New("create Advertisement Error")
+		return "", err
 	}
 
-	return nil
+	return ID, nil
 }

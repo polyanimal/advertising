@@ -35,11 +35,12 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // CreateAdvertisement mocks base method.
-func (m *MockRepository) CreateAdvertisement(arg0 models.Advertisement) error {
+func (m *MockRepository) CreateAdvertisement(arg0 models.Advertisement) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAdvertisement", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateAdvertisement indicates an expected call of CreateAdvertisement.
