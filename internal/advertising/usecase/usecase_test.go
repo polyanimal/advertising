@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestMoviesUseCase(t *testing.T) {
+func TestAdvertisingUseCase(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -33,6 +33,13 @@ func TestMoviesUseCase(t *testing.T) {
 		Description: "",
 		PhotoLinks: []string{},
 		Price: 0,
+	}
+
+	testOptionsStruct := models.Options{
+		Sort:           "by_date",
+		Order:          "ascending",
+		ObjectsPerPage: 10,
+		PageNumber:     1,
 	}
 
 	t.Run("CreateAd", func(t *testing.T) {
@@ -66,6 +73,18 @@ func TestMoviesUseCase(t *testing.T) {
 		repo.EXPECT().GetAdvertisement(ID).Return(testAdd, testErr)
 		ad, err := uc.GetAdvertisement(ID)
 		assert.Equal(t, testAdd, ad)
+		assert.Error(t, err)
+	})
+
+	t.Run("GetAllAds", func(t *testing.T) {
+		repo.EXPECT().GetAllAdvertisements(&testOptionsStruct).Return([]models.Advertisement{}, nil)
+		ads, err := uc.GetAllAdvertisements(&testOptionsStruct)
+		assert.Equal(t, []models.Advertisement{}, ads)
+		assert.NoError(t, err)
+	})
+
+	t.Run("GetAllAds", func(t *testing.T) {
+		_, err := uc.GetAllAdvertisements(&models.Options{PageNumber: -1})
 		assert.Error(t, err)
 	})
 

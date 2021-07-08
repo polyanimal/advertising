@@ -9,8 +9,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/polyanimal/advertising/internal/advertising"
 	"github.com/polyanimal/advertising/internal/advertising/delivery"
-	//localstorage "github.com/polyanimal/advertising/internal/advertising/repository/localstorage"
-	database "github.com/polyanimal/advertising/internal/advertising/repository/database"
+	"github.com/polyanimal/advertising/internal/advertising/repository"
 	"github.com/polyanimal/advertising/internal/advertising/usecase"
 	"github.com/polyanimal/advertising/internal/middleware"
 	"log"
@@ -44,8 +43,7 @@ func NewServer() *App {
 		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
 
-	//advertisingRepo := localstorage.NewAdvertisingRepo()
-	advertisingRepo := database.NewAdvertisingRepo(dbpool)
+	advertisingRepo := repository.NewAdvertisingRepo(dbpool)
 	advertisingUC := usecase.NewAdvertisingUC(advertisingRepo)
 
 	validationMiddleware := middleware.NewValidationMiddleware()
