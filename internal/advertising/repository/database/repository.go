@@ -68,7 +68,7 @@ func (r *AdvertisingRepo) GetAllAdvertisements(options *models.Options) ([]model
 	}
 
 	start := (options.PageNumber - 1) * options.ObjectsPerPage
-	if start >= len(ads) {
+	if start >= len(ads) && len(ads) != 0 {
 		return nil, errors.New("invalid page")
 	}
 
