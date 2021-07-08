@@ -28,6 +28,13 @@ func TestMoviesUseCase(t *testing.T) {
 		Price: 10000,
 	}
 
+	invalidAd := models.Advertisement{
+		Name: "",
+		Description: "",
+		PhotoLinks: []string{},
+		Price: 0,
+	}
+
 	t.Run("CreateAd", func(t *testing.T) {
 		repo.EXPECT().CreateAdvertisement(testAdd).Return(ID, nil)
 		newID, err := uc.CreateAdvertisement(testAdd)
@@ -39,6 +46,12 @@ func TestMoviesUseCase(t *testing.T) {
 		repo.EXPECT().CreateAdvertisement(testAdd).Return(ID, testErr)
 		newID, err := uc.CreateAdvertisement(testAdd)
 		assert.Equal(t, ID, newID)
+		assert.Error(t, err)
+	})
+
+	t.Run("CreateAd - invalid", func(t *testing.T) {
+		newID, err := uc.CreateAdvertisement(invalidAd)
+		assert.Equal(t, "", newID)
 		assert.Error(t, err)
 	})
 
