@@ -63,7 +63,7 @@ func (h *Handler) GetAllAdvertisements(ctx *gin.Context) {
 func (h *Handler) GetAdvertisement(ctx *gin.Context) {
 	ID := ctx.Param("id")
 	fields := new(fieldsParam)
-	errFields := ctx.BindJSON(fields)
+	_ = ctx.ShouldBindJSON(fields)
 
 	ad, err := h.useCase.GetAdvertisement(ID)
 	if err != nil {
@@ -78,14 +78,12 @@ func (h *Handler) GetAdvertisement(ctx *gin.Context) {
 		MainPhoto: ad.PhotoLinks[0],
 	}
 
-	if errFields == nil {
-		for _, s := range fields.Fields {
-			switch {
-			case s == "description":
-				response.Description = ad.Description
-			case s == "all_photos":
-				response.AllPhotos = ad.PhotoLinks
-			}
+	for _, s := range fields.Fields {
+		switch {
+		case s == "description":
+			response.Description = ad.Description
+		case s == "all_photos":
+			response.AllPhotos = ad.PhotoLinks
 		}
 	}
 
