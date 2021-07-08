@@ -8,9 +8,9 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/polyanimal/advertising/internal/advertising"
-	advertisingHttp "github.com/polyanimal/advertising/internal/advertising/delivery/http"
+	"github.com/polyanimal/advertising/internal/advertising/delivery"
 	//localstorage "github.com/polyanimal/advertising/internal/advertising/repository/localstorage"
-	 database "github.com/polyanimal/advertising/internal/advertising/repository/database"
+	database "github.com/polyanimal/advertising/internal/advertising/repository/database"
 	"github.com/polyanimal/advertising/internal/advertising/usecase"
 	"github.com/polyanimal/advertising/internal/middleware"
 	"log"
@@ -64,7 +64,7 @@ func (app *App) Run(port string) error {
 	router.Use(cors.New(config))
 
 	router.Use(gin.Recovery())
-	advertisingHttp.RegisterHTTPEndpoints(router, app.advertisingUC, app.validationMiddleware)
+	delivery.RegisterHTTPEndpoints(router, app.advertisingUC, app.validationMiddleware)
 
 	app.server = &http.Server{
 		Addr:           ":" + port,

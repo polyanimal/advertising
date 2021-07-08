@@ -49,6 +49,10 @@ func (r *AdvertisingRepo) GetAllAdvertisements(options *models.Options) ([]model
 		ads = append(ads, ad)
 	}
 
+	if len(ads) == 0 {
+		return []models.Advertisement{}, nil
+	}
+
 	if options.Sort == "by_date" {
 		sort.Slice(ads, func(i, j int) bool {
 			return ads[i].DateCreate.Before(ads[j].DateCreate)
@@ -68,7 +72,7 @@ func (r *AdvertisingRepo) GetAllAdvertisements(options *models.Options) ([]model
 	}
 
 	start := (options.PageNumber - 1) * options.ObjectsPerPage
-	if start >= len(ads) && len(ads) != 0 {
+	if start >= len(ads) {
 		return nil, errors.New("invalid page")
 	}
 
