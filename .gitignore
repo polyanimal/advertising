@@ -1,0 +1,6 @@
+.idea
+.idea/
+go.sum
+cover.out
+coverage1.out
+*.out
