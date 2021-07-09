@@ -20,9 +20,9 @@ func NewHandler(useCase advertising.UseCase) *Handler {
 }
 
 type AdvertisementsResponse struct {
-	CurrentPage    int                    `json:"current_page"`
-	PagesNumber    int                    `json:"pages_number"`
-	Advertisements []models.Advertisement `json:"advertisements"`
+	CurrentPage    int                 `json:"current_page"`
+	PagesNumber    int                 `json:"pages_number"`
+	Advertisements []models.AdFeedItem `json:"advertisements"`
 }
 
 type AdvertisementResponse struct {

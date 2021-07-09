@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
@@ -56,10 +55,6 @@ func NewServer() *App {
 
 func (app *App) Run(port string) error {
 	router := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost" + ":" + port}
-	config.AllowCredentials = true
-	router.Use(cors.New(config))
 
 	router.Use(gin.Recovery())
 	delivery.RegisterHTTPEndpoints(router, app.advertisingUC, app.validationMiddleware)

@@ -1,15 +1,25 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/polyanimal/advertising/internal/server"
-	constants "github.com/polyanimal/advertising/pkg/const"
 	"log"
+	"os"
 )
 
 func main() {
 	app := server.NewServer()
 
-	if err := app.Run(constants.Port); err != nil {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Failed to export env vars: %v", err)
+	}
+
+	port, ok := os.LookupEnv("SERVER_PORT")
+	if !ok {
+		log.Fatalf("Failed to export port from env")
+	}
+
+	if err := app.Run(port); err != nil {
 		log.Fatal(err)
 	}
 }

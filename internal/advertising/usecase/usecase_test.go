@@ -79,7 +79,7 @@ func TestAdvertisingUseCase(t *testing.T) {
 	t.Run("GetAllAds", func(t *testing.T) {
 		repo.EXPECT().GetAllAdvertisements(&testOptionsStruct).Return([]models.Advertisement{}, nil)
 		ads, err := uc.GetAllAdvertisements(&testOptionsStruct)
-		assert.Equal(t, []models.Advertisement{}, ads)
+		assert.Equal(t, []models.AdFeedItem{}, ads)
 		assert.NoError(t, err)
 	})
 

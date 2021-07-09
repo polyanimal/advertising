@@ -13,10 +13,7 @@ services:
       - 5000:5432
 
   main:
-    restart: always
-    build:
-      context: .
-      dockerfile: dockerfile-main
+    build: .
     depends_on:
       - db
     ports:

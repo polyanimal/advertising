@@ -17,14 +17,24 @@ func NewAdvertisingUC(repository advertising.Repository) *AdvertisingUC {
 	}
 }
 
-func (uc *AdvertisingUC) GetAllAdvertisements(options *models.Options) ([]models.Advertisement, error) {
+func (uc *AdvertisingUC) GetAllAdvertisements(options *models.Options) ([]models.AdFeedItem, error) {
 	if options.PageNumber <= 0 {
 		return nil, errors.New("invalid page")
 	}
 
 	options.ObjectsPerPage = constants.AdsPerPage
 
-	return uc.repository.GetAllAdvertisements(options)
+	ads, err := uc.repository.GetAllAdvertisements(options)
+	if err != nil {
+		return []models.AdFeedItem{}, err
+	}
+
+	adFeed := make([]models.AdFeedItem, 0)
+	for _, ad := range ads {
+		adFeed = append(adFeed, models.AdFeedItem{Name: ad.Name, MainPhoto: ad.PhotoLinks[0], Price: ad.Price})
+	}
+
+	return adFeed, nil
 }
 
 func (uc *AdvertisingUC) GetAdvertisement(ID string) (models.Advertisement, error) {
